@@ -1,29 +1,15 @@
 package main
 
 import (
-	"github.com/unrolled/render"
+	"fmt"
+	"github.com/cnyangming/webservice/router"
 	"github.com/urfave/negroni"
 	"net/http"
 	"time"
 )
 
-var formatter = render.New()
-
 func main() {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		//fmt.Println("Accept request from ", r.RemoteAddr)
-		formatter.Text(w, http.StatusOK, "Hello from go")
-		return
-	})
-	mux.HandleFunc("/index", func(w http.ResponseWriter, r *http.Request) {
-		//fmt.Println("Accept request from ", r.RemoteAddr)
-		formatter.JSON(w, http.StatusOK, struct {
-			Author string
-		}{"yang ming"})
-		return
-	})
+	mux := router.InitRouter()
 
 	n := negroni.Classic()
 	n.UseHandler(mux)
@@ -35,6 +21,7 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+	fmt.Println("Start service: http://127.0.0.1:8080")
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
